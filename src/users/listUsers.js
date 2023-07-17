@@ -1,7 +1,8 @@
 "use strict";
 
 module.exports.handler = async (event) => {
-  return {
+  console.log(`Event - ${event}`)
+    return {
     statusCode: 200,
     body: JSON.stringify(
       {
