@@ -42,3 +42,5 @@ functions:
       - http:
           path: /users/get
           method: get
+resources:
+    Description: AWS Auth0 Demo REST API

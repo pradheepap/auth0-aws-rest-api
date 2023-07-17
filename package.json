@@ -1,0 +1,30 @@
+{
+  "name": "auth0-aws-rest-api",
+  "version": "1.0.0",
+  "description": "Auth0 AWS REST API Demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pradheepap/auth0-aws-rest-api.git"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^9.0.0",
+    "jwks-rsa": "^3.0.1",
+    "aws-sdk": "2.814.0"
+  },
+  "keywords": [
+    "auth0",
+    "aws",
+    "jwt",
+    "rest-api"
+  ],
+  "author": "Pradheepa Pullanieswaran",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pradheepap/auth0-aws-rest-api/issues"
+  },
+  "homepage": "https://github.com/pradheepap/auth0-aws-rest-api#readme"
+}
