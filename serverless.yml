@@ -1,0 +1,44 @@
+service: auth0-aws-rest-api
+frameworkVersion: "3"
+configValidationMode: error	
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-southeast-1
+  profile: okta
+  stage: prod
+  deploymentPrefix: serverless
+  deploymentBucket:
+    name: com.okta.auth0.${self:provider.region}.deploys
+    maxPreviousDeploymentArtifacts: 10
+    blockPublicAccess: true
+    skipPolicySetup: true
+    versioning: true
+    # serverSideEncryption: AES256
+
+  tags:
+    event: ${env:AWS_CLOUD_FORMATION_TAG_EVENT_NAME}
+    region: ${env:AWS_CLOUD_FORMATION_TAG_EVENT_REGION}
+    createdBy: ${env:AWS_CLOUD_FORMATION_TAG_CREATED_BY}
+
+functions:
+  createUser:
+    handler: src/users/createUser.handler
+    events:
+      - http:
+          path: /users/create
+          method: post
+  listUsers:
+    handler: src/users/listUsers.handler
+    events:
+      - http:
+          path: /users/list
+          method: get
+  getUser:
+    handler: src/users/getUser.handler
+    events:
+      - http:
+          path: /users/get
+          method: get
