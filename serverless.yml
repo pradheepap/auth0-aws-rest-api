@@ -9,6 +9,12 @@ provider:
   region: ap-southeast-1
   profile: okta
   stage: prod
+  environment:
+    # AUTH0_CLIENT_ID: ${file(./secrets.json):AUTH0_CLIENT_ID}
+    # AUTH0_CLIENT_PUBLIC_KEY: ${file(./public_key.pem)}
+    JWKS_URI: https://pradheepa.auth0.com/.well-known/jwks.json
+    AUDIENCE: https://vaai3wmt1k.execute-api.ap-southeast-1.amazonaws.com/
+    TOKEN_ISSUER: https://pradheepa.auth0.com/
   deploymentPrefix: serverless
   deploymentBucket:
     name: com.okta.auth0.${self:provider.region}.deploys
@@ -17,19 +23,40 @@ provider:
     skipPolicySetup: true
     versioning: true
     # serverSideEncryption: AES256
-
+    #iam:
+    #  role: myCustRole0
+    # role: 
+    #   statements:
+    #     - Effect: Allow
+    #       Action:
+    #         - 's3:ListBucket'
+    #       Resource:
+    #         Fn::Join:
+    #           - ''
+    #           - - 'arn:aws:s3:::'
+    #             - Ref: ServerlessDeploymentBucket
   tags:
     event: ${env:AWS_CLOUD_FORMATION_TAG_EVENT_NAME}
     region: ${env:AWS_CLOUD_FORMATION_TAG_EVENT_REGION}
     createdBy: ${env:AWS_CLOUD_FORMATION_TAG_CREATED_BY}
 
 functions:
+  auth:
+    handler: src/authorizers/index.handler
+    role: myCustRole0
   createUser:
     handler: src/users/createUser.handler
     events:
       - http:
           path: /users/create
           method: post
+          cors: true
+          authorizer: 
+            name: auth
+            type: token
+            resultTtlInSeconds: 3600
+            identitySource: method.request.header.Authorization
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$         
   listUsers:
     handler: src/users/listUsers.handler
     events:
@@ -44,3 +71,17 @@ functions:
           method: get
 resources:
     Description: AWS Auth0 Demo REST API
+    Resources:
+      myCustRole0:
+        Type: AWS::IAM::Role
+        Properties:
+          RoleName: MyCustRole0
+          AssumeRolePolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Principal:
+                  Service:
+                    - lambda.amazonaws.com
+                    - apigateway.amazonaws.com
+                Action: sts:AssumeRole
